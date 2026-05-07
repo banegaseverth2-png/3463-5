@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>手速测试 · 可爱卡通版</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;}
+body{
+width: 100vw;
+height: 100vh;
+background: #fdf6fd;
+color: #333;
+overflow: hidden;
+position: relative;
+transition: all 0.3s;
+}
+body.dark{
+background: #1a1a2e;
+color: #fff;
+}
+
+/* 顶部栏 */
+.header{
+padding: 16px;
+display: flex;
+justify-content: space-between;
+align-items: center;
+background: #fff;
+border-radius: 0 0 20px 20px;
+box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+body.dark .header{
+background: #252545;
+box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+.title{
+font-size: 18px;
+font-weight: bold;
+color: #f26ea9;
+}
+body.dark .title{color: #ff9ad1;}
+.round{
+font-size: 14px;
+color: #666;
+}
+body.dark .round{color: #ccc;}
+
+/* 主题按钮 */
+.themeBtn{
+width: 40px;
+height: 40px;
+border-radius: 50%;
+border: none;
+background: #f0f0ff;
+font-size: 18px;
+}
+body.dark .themeBtn{
+background: #3a3a5a;
+color: #fff;
+}
+
+/* 控制面板 */
+.controls{
+display: flex;
+gap: 10px;
+padding: 12px 16px;
+overflow-x: auto;
+}
+.card{
+flex: 1;
+min-width: 120px;
+background: #fff;
+padding: 12px;
+border-radius: 16px;
+box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+}
+body.dark .card{
+background: #252545;
+}
+.card label{
+font-size: 12px;
+color: #888;
+margin-bottom: 6px;
+display: block;
+}
+body.dark .card label{color: #aaa;}
+select, input[type="range"]{
+width: 100%;
+padding: 6px;
+border-radius: 8px;
+border: none;
+background: #f7f7fb;
+}
+body.dark select, body.dark input[type="range"]{
+background: #3a3a5a;
+color: #fff;
+}
+
+/* 排行榜 */
+.rank{
+padding: 12px 16px;
+}
+.rankTitle{
+font-size: 14px;
+font-weight: bold;
+color: #6c63ff;
+margin-bottom: 4px;
+}
+.rankList{
+font-size: 12px;
+line-height: 1.5;
+color: #555;
+}
+body.dark .rankList{color: #ddd;}
+
+/* 主游戏区 */
+.gameArea{
+flex: 1;
+position: relative;
+display: flex;
+align-items: center;
+justify-content: center;
+padding: 20px;
+}
+
+/* 红点（果冻效果） */
+.dot{
+width: 50px;
+height: 50px;
+border-radius: 50%;
+position: absolute;
+background: radial-gradient(circle, #ff85a2, #ff5983);
+box-shadow: 0 0 20px #ff85a2;
+display: none;
+transform: translate(-50%, -50%);
+}
+
+/* 提示 */
+.tip{
+font-size: 16px;
+color: #888;
+text-align: center;
+}
+body.dark .tip{color: #aaa;}
+
+/* 开始按钮 */
+.startBtn{
+padding: 16px 40px;
+border-radius: 50px;
+background: linear-gradient(90deg, #6c63ff, #f26ea9);
+color: #fff;
+font-size: 18px;
+font-weight: bold;
+border: none;
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+box-shadow: 0 6px 15px rgba(108,99,255,0.3);
+}
+.startBtn.hide{display: none;}
+
+/* 结果 */
+.result{
+position: fixed;
+bottom: 20px;
+left: 50%;
+transform: translateX(-50%);
+width: calc(100% - 30px);
+background: #fff;
+padding: 16px;
+border-radius: 20px;
+text-align: center;
+line-height: 1.6;
+box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+}
+body.dark .result{
+background: #252545;
+}
+
+/* 引导弹窗 */
+.guide{
+position: fixed;
+inset: 0;
+background: rgba(0,0,0,0.6);
+display: flex;
+align-items: center;
+justify-content: center;
+padding: 20px;
+z-index: 999;
+}
+.guideBox{
+background: #fff;
+border-radius: 20px;
+padding: 24px;
+max-width: 320px;
+text-align: center;
+line-height: 1.8;
+}
+body.dark .guideBox{
+background: #252545;
+}
+.guideBox h3{
+color: #f26ea9;
+margin-bottom: 10px;
+}
+.guideBox button{
+margin-top: 16px;
+padding: 10px 24px;
+background: #6c63ff;
+color: #fff;
+border: none;
+border-radius: 12px;
+}
+</style>
+</head>
+<body>
+
+<!-- 引导 -->
+<div class="guide" id="guide">
+<div class="guideBox">
+<h3>🎮 手速测试说明</h3>
+<p>✨ 超可爱卡通界面</p>
+<p>🎯 红点出现立刻点击</p>
+<p>⚙️ 可调节难度与大小</p>
+<p>🏆 自动保存最佳成绩</p>
+<p>🎵 有音效更有趣</p>
+<button onclick="closeGuide()">开始玩</button>
+</div>
+</div>
+
+<!-- 顶部 -->
+<div class="header">
+<div class="title">⚡ 手速小测试</div>
+<div class="round">第 <span id="cur">1</span> /5 轮</div>
+<button class="themeBtn" id="themeBtn">🌙</button>
+</div>
+
+<!-- 控制区 -->
+<div class="controls">
+<div class="card">
+<label>难度</label>
+<select id="level">
+<option value="easy">简单</option>
+<option value="normal" selected>普通</option>
+<option value="hard">困难</option>
+</select>
+</div>
+<div class="card">
+<label>红点大小</label>
+<input type="range" id="size" min="30" max="80" value="50">
+</div>
+</div>
+
+<!-- 排行榜 -->
+<div class="rank">
+<div class="rankTitle">🏆 最佳成绩</div>
+<div class="rankList" id="rankTxt">暂无记录</div>
+</div>
+
+<!-- 游戏区 -->
+<div class="gameArea">
+<div class="tip" id="tip">点击按钮开始挑战</div>
+<div class="dot" id="dot"></div>
+</div>
+
+<!-- 结果 -->
+<div class="result" id="result">准备就绪～</div>
+
+<!-- 开始按钮 -->
+<button class="startBtn" id="startBtn">开始测试</button>
+
+<script>
+// 音效
+const audioShow = new Audio("data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgt7+/BO5+f4xRZXlKemVnlVmhVFA");
+const audioClick = new Audio("data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU9vT19A");
+const audioFinish = new Audio("data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YgQAAACBhoWF");
+
+const dot = document.getElementById('dot');
+const startBtn = document.getElementById('startBtn');
+const cur = document.getElementById('cur');
+const result = document.getElementById('result');
+const tip = document.getElementById('tip');
+const rankTxt = document.getElementById('rankTxt');
+const guide = document.getElementById('guide');
+const level = document.getElementById('level');
+const size = document.getElementById('size');
+const themeBtn = document.getElementById('themeBtn');
+const body = document.body;
+
+let times = [];
+let round = 1;
+let startMs = 0;
+let rank = JSON.parse(localStorage.getItem('speedRank4')) || [];
+
+// 主题切换
+themeBtn.onclick = () => {
+body.classList.toggle('dark');
+themeBtn.textContent = body.classList.contains('dark') ? '☀️' : '🌙';
+};
+
+// 关闭引导
+function closeGuide(){
+guide.style.display = 'none';
+}
+
+// 红点大小
+size.addEventListener('input',()=>{
+dot.style.width = size.value + 'px';
+dot.style.height = size.value + 'px';
+});
+
+// 排行榜
+function renderRank(){
+if(rank.length === 0){
+rankTxt.textContent = '暂无记录';
+return;
+}
+let str = '';
+rank.slice(0,5).forEach((item,i)=>{
+str += `${i+1}. ${item}ms `;
+});
+rankTxt.textContent = str;
+}
+renderRank();
+
+// 延迟
+function getDelay(){
+let v = level.value;
+if(v === 'easy') return Math.random() * 2000 + 1000;
+if(v === 'normal') return Math.random() * 1400 + 600;
+if(v === 'hard') return Math.random() * 800 + 300;
+}
+
+// 开始
+startBtn.onclick = () => {
+startBtn.classList.add('hide');
+tip.style.display = 'none';
+times = [];
+round = 1;
+next();
+};
+
+// 下一轮
+function next(){
+if(round > 5){ finish(); return; }
+cur.textContent = round;
+result.textContent = '等待红点出现...';
+setTimeout(showDot, getDelay());
+}
+
+// 显示红点
+function showDot(){
+let w = window.innerWidth;
+let h = window.innerHeight;
+let s = parseInt(size.value);
+let x = Math.random() * (w - s*2) + s;
+let y = Math.random() * (h - s*3) + s*1.5;
+dot.style.left = x + 'px';
+dot.style.top = y + 'px';
+dot.style.display = 'block';
+audioShow.currentTime=0; audioShow.play().catch(e=>{});
+startMs = performance.now();
+}
+
+// 点击红点
+dot.onclick = () => {
+dot.style.display = 'none';
+audioClick.currentTime=0; audioClick.play().catch(e=>{});
+let t = Math.round(performance.now() - startMs);
+times.push(t);
+result.textContent = `第${round}次：${t} 毫秒`;
+round++;
+setTimeout(next, 700);
+};
+
+// 结束
+function finish(){
+audioFinish.currentTime=0; audioFinish.play().catch(e=>{});
+let sum = times.reduce((a,b)=>a+b,0);
+let avg = Math.round(sum/5);
+result.innerHTML = `🎯 测试完成<br>5次成绩：${times.join('ms ')}ms<br>平均反应：${avg} 毫秒`;
+
+rank.push(avg);
+rank.sort((a,b)=>a-b);
+rank = rank.slice(0,10);
+localStorage.setItem('speedRank4', JSON.stringify(rank));
+renderRank();
+
+setTimeout(()=>{
+if(confirm('再来一局吗？')){
+startBtn.classList.remove('hide');
+tip.style.display = 'block';
+tip.textContent = '点击开始新一局';
+}
+},1200);
+}
+</script>
+</body>
+</html>
